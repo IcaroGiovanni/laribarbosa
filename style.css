@@ -2611,6 +2611,100 @@ ul {
     }
 }
 
+/* -------------------
+   Tabela de tempo de atendimento
+   ------------------- */
+.duration-wrap {
+    background: #fff;
+    border: 1px solid rgba(169, 113, 78, 0.18);
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+}
+
+.duration-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.92rem;
+}
+
+.duration-table thead th {
+    background: linear-gradient(135deg, #1F1512 0%, #3E2b26 100%);
+    color: #EAD9C6;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 1.6px;
+    text-transform: uppercase;
+    padding: 14px 16px;
+    text-align: left;
+}
+
+.duration-table thead th:last-child {
+    text-align: right;
+}
+
+.duration-table tbody td {
+    padding: 13px 16px;
+    border-bottom: 1px solid #f4efea;
+    color: var(--color-text);
+}
+
+.duration-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.duration-table tbody tr:nth-child(even) {
+    background: #FBF7F3;
+}
+
+.duration-table tbody tr {
+    transition: background 0.2s ease;
+}
+
+.duration-table tbody tr:hover {
+    background: #F6EBDF;
+}
+
+.duration-table td:first-child i {
+    color: var(--color-primary-dark);
+    margin-right: 8px;
+    width: 16px;
+    text-align: center;
+}
+
+.duration-table td:last-child {
+    text-align: right;
+}
+
+.d-time {
+    display: inline-block;
+    background: rgba(169, 113, 78, 0.12);
+    color: var(--color-primary-dark);
+    font-weight: 800;
+    font-size: 0.85rem;
+    padding: 6px 14px;
+    border-radius: 20px;
+    white-space: nowrap;
+}
+
+.d-time i {
+    margin-right: 5px;
+    font-size: 0.75rem;
+}
+
+.duration-note {
+    margin-top: 14px;
+    font-size: 0.82rem;
+    color: #8a7f76;
+    text-align: center;
+    line-height: 1.6;
+}
+
+.duration-note i {
+    color: var(--color-primary-dark);
+    margin-right: 5px;
+}
+
 /* Mobile Responsive */
 @media (max-width: 480px) {
     .btn-whatsapp-pulse {
@@ -2687,5 +2781,14 @@ ul {
         font-size: 0.68rem;
         letter-spacing: 0.8px;
         padding: 9px 0;
+    }
+
+    .duration-table {
+        font-size: 0.85rem;
+    }
+
+    .duration-table thead th,
+    .duration-table tbody td {
+        padding: 11px 12px;
     }
 }
