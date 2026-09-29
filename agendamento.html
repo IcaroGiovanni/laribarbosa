@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Agendamento - Larissa Barbosa Nail Designer. Escolha o serviço, o dia e o horário.">
+    <title>Agendamento | Larissa Barbosa</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Poppins:wght@300;400;500;600&display=swap"
+        rel="stylesheet">
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="style.css">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body>
+
+    <!-- Animated Background Bubbles -->
+    <div class="area">
+        <ul class="circles">
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+        </ul>
+    </div>
+
+    <main class="bio-wrapper show-content">
+
+        <!-- Header -->
+        <header class="bio-header text-center">
+            <div class="profile-container">
+                <img src="ela.jpeg" alt="Larissa Barbosa" class="profile-pic-main">
+                <div class="status-dot"></div>
+            </div>
+
+            <div class="bio-name-wrapper">
+                <h1 class="bio-name">Larissa Barbosa</h1>
+                <div class="verified-badge"><i class="fas fa-check-circle"></i></div>
+            </div>
+
+            <div class="header-badges">
+                <span class="header-tag">Continuar Agendamento</span>
+            </div>
+
+            <p class="bio-description">
+                Escolha o serviço, o dia e o horário.<br>
+                📍 Confisco, Belo Horizonte - MG
+            </p>
+        </header>
+
+        <!-- Área de agendamento -->
+        <section class="bio-section">
+            <h2 class="section-title">Seu Horário</h2>
+
+            <div class="bio-card booking-card">
+
+                <!-- Passo 1: Serviço -->
+                <div class="booking-step">
+                    <div class="booking-step-title"><span>1</span> Serviço</div>
+                    <select id="sel-servico" class="booking-select">
+                        <option value="">Selecione o serviço</option>
+
+                        <optgroup label="Alongamento">
+                            <option value="Alongamento Natural|R$ 125,00">Alongamento Natural — R$ 125,00</option>
+                            <option value="Alongamento Natural + Cutícula|R$ 135,00">Alongamento Natural + Cutícula — R$ 135,00</option>
+                            <option value="Alongamento Decorado|R$ 155,00">Alongamento Decorado — R$ 155,00</option>
+                            <option value="Alongamento com Decoração 3D|R$ 155,00">Alongamento com Decoração 3D — R$ 155,00</option>
+                            <option value="Alongamento Decorado + Cutícula|R$ 170,00">Alongamento Decorado + Cutícula — R$ 170,00</option>
+                        </optgroup>
+
+                        <optgroup label="Banho de Gel">
+                            <option value="Banho de Gel|R$ 120,00">Banho de Gel — R$ 120,00</option>
+                            <option value="Banho de Gel + Cutícula|R$ 130,00">Banho de Gel + Cutícula — R$ 130,00</option>
+                            <option value="Banho de Gel Decorado + Cutícula|R$ 150,00">Banho de Gel Decorado + Cutícula — R$ 150,00</option>
+                        </optgroup>
+
+                        <optgroup label="Manutenção">
+                            <option value="Manutenção Natural|R$ 100,00">Manutenção Natural — R$ 100,00</option>
+                            <option value="Manutenção Decorada|R$ 125,00">Manutenção Decorada — R$ 125,00</option>
+                            <option value="Manutenção Decorada + Cutícula|R$ 135,00">Manutenção Decorada + Cutícula — R$ 135,00</option>
+                        </optgroup>
+
+                        <optgroup label="Reposição e Decorações">
+                            <option value="Reposição de unha fora da manutenção|R$ 15,00">Reposição de unha (fora da manutenção) — R$ 15,00 / unha</option>
+                        </optgroup>
+
+                        <optgroup label="Manicure">
+                            <option value="Manicure Tradicional|R$ 35,00">Manicure Tradicional — R$ 35,00</option>
+                            <option value="Manicure & Pedicure|R$ 60,00">Manicure &amp; Pedicure — R$ 60,00</option>
+                        </optgroup>
+
+                        <optgroup label="Pedicure">
+                            <option value="Pedicure Tradicional|R$ 40,00">Pedicure Tradicional — R$ 40,00</option>
+                            <option value="Pedicure Premium|R$ 45,00">Pedicure Premium — R$ 45,00</option>
+                            <option value="Pedicure Alto Padrão + Esmaltação em Gel|R$ 85,00">Pedicure Alto Padrão + Esmaltação em Gel — R$ 85,00</option>
+                            <option value="Plástica dos Pés + Pedicure Tradicional|R$ 95,00">Plástica dos Pés + Pedicure Tradicional — R$ 95,00</option>
+                        </optgroup>
+                    </select>
+                </div>
+
+                <!-- Passo 2: Dia -->
+                <div class="booking-step">
+                    <div class="booking-step-title"><span>2</span> Escolha o dia</div>
+
+                    <div class="calendar-nav">
+                        <button type="button" id="cal-prev" aria-label="Mês anterior">
+                            <i class="fas fa-chevron-left"></i>
+                        </button>
+                        <span class="calendar-label" id="cal-label"></span>
+                        <button type="button" id="cal-next" aria-label="Próximo mês">
+                            <i class="fas fa-chevron-right"></i>
+                        </button>
+                    </div>
+
+                    <div class="calendar-grid" id="calendar"></div>
+                </div>
+
+                <!-- Passo 3: Horário -->
+                <div class="booking-step">
+                    <div class="booking-step-title"><span>3</span> Escolha o horário</div>
+                    <div id="slots" class="slots">
+                        <p class="slots-placeholder">Selecione um dia para ver os horários disponíveis.</p>
+                    </div>
+                </div>
+
+                <!-- Resumo -->
+                <div class="booking-summary" id="resumo">
+                    Selecione o serviço, o dia e o horário para continuar.
+                </div>
+
+                <button type="button" id="btn-confirmar" class="bio-btn bio-btn-primary" disabled>
+                    <i class="fas fa-arrow-right"></i> CONTINUAR PARA PAGAMENTO
+                </button>
+
+                <p class="booking-note">
+                    <i class="fas fa-info-circle"></i> O horário só é reservado após o pagamento do sinal de 50%.
+                </p>
+
+                <a href="politica-pagamento.html" class="policy-back-link">
+                    <i class="fas fa-arrow-left"></i> Voltar para a política de agendamento
+                </a>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="text-center bio-footer">
+            <div class="social-row">
+                <a href="https://instagram.com/naildesignerericasilva" target="_blank"><i class="fab fa-instagram"></i></a>
+                <a href="https://wa.me/5531991628750" target="_blank"><i class="fab fa-whatsapp"></i></a>
+            </div>
+            <p>Larissa Barbosa © 2025</p>
+        </footer>
+
+    </main>
+
+    <!-- Floating WA -->
+    <a href="https://wa.me/5531991628750" class="floating-whatsapp" target="_blank">
+        <i class="fab fa-whatsapp"></i>
+    </a>
+
+    <script>
+        const DIAS_SEMANA = ['Domingo', 'Segunda-feira', 'Terça-feira', 'Quarta-feira', 'Quinta-feira', 'Sexta-feira', 'Sábado'];
+        const MESES = ['janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho', 'julho', 'agosto', 'setembro', 'outubro', 'novembro', 'dezembro'];
+        const HORARIOS = ['09:00', '10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00', '18:00'];
+
+        const hoje = new Date();
+        hoje.setHours(0, 0, 0, 0);
+        const limite = new Date(hoje.getFullYear(), hoje.getMonth() + 2, hoje.getDate());
+
+        let mesAtual = new Date(hoje.getFullYear(), hoje.getMonth(), 1);
+        let diaSelecionado = null;
+        let horaSelecionada = '';
+
+        const cal = document.getElementById('calendar');
+        const calLabel = document.getElementById('cal-label');
+        const btnPrev = document.getElementById('cal-prev');
+        const btnNext = document.getElementById('cal-next');
+        const slotsEl = document.getElementById('slots');
+        const selServico = document.getElementById('sel-servico');
+        const resumo = document.getElementById('resumo');
+        const btnConfirmar = document.getElementById('btn-confirmar');
+
+        function mesmoDia(a, b) {
+            return a && b && a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate();
+        }
+
+        function renderCalendario() {
+            calLabel.textContent = MESES[mesAtual.getMonth()] + ' de ' + mesAtual.getFullYear();
+
+            const primeiroDiaSemana = new Date(mesAtual.getFullYear(), mesAtual.getMonth(), 1).getDay();
+            const diasNoMes = new Date(mesAtual.getFullYear(), mesAtual.getMonth() + 1, 0).getDate();
+
+            let html = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb']
+                .map(d => '<div class="cal-head">' + d + '</div>').join('');
+
+            for (let i = 0; i < primeiroDiaSemana; i++) html += '<div></div>';
+
+            for (let d = 1; d <= diasNoMes; d++) {
+                const data = new Date(mesAtual.getFullYear(), mesAtual.getMonth(), d);
+                const domingo = data.getDay() === 0;
+                const passado = data < hoje;
+                const fora = data > limite;
+                const desabilitado = domingo || passado || fora;
+                const classes = ['cal-day'];
+                if (mesmoDia(data, hoje)) classes.push('today');
+                if (mesmoDia(data, diaSelecionado)) classes.push('selected');
+
+                html += '<button type="button" class="' + classes.join(' ') + '" data-dia="' + d + '"' +
+                    (desabilitado ? ' disabled' : '') + '>' + d + '</button>';
+            }
+
+            cal.innerHTML = html;
+
+            cal.querySelectorAll('.cal-day').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    diaSelecionado = new Date(mesAtual.getFullYear(), mesAtual.getMonth(), parseInt(btn.dataset.dia, 10));
+                    horaSelecionada = '';
+                    renderCalendario();
+                    renderHorarios();
+                    atualizarResumo();
+                });
+            });
+
+            btnPrev.disabled = mesAtual <= new Date(hoje.getFullYear(), hoje.getMonth(), 1);
+            btnNext.disabled = mesAtual >= new Date(limite.getFullYear(), limite.getMonth(), 1);
+        }
+
+        function renderHorarios() {
+            if (!diaSelecionado) {
+                slotsEl.innerHTML = '<p class="slots-placeholder">Selecione um dia para ver os horários disponíveis.</p>';
+                return;
+            }
+
+            const agora = new Date();
+            const ehHoje = mesmoDia(diaSelecionado, agora);
+
+            slotsEl.innerHTML = HORARIOS.map(h => {
+                const passou = ehHoje && parseInt(h, 10) <= agora.getHours();
+                const cls = h === horaSelecionada ? 'slot selected' : 'slot';
+                return '<button type="button" class="' + cls + '" data-hora="' + h + '"' +
+                    (passou ? ' disabled' : '') + '>' + h + '</button>';
+            }).join('');
+
+            slotsEl.querySelectorAll('.slot').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    horaSelecionada = btn.dataset.hora;
+                    renderHorarios();
+                    atualizarResumo();
+                });
+            });
+        }
+
+        function servicoAtual() {
+            const valor = selServico.value;
+            if (!valor) return null;
+            const partes = valor.split('|');
+            return { nome: partes[0], preco: partes[1] };
+        }
+
+        function atualizarResumo() {
+            const servico = servicoAtual();
+            const completo = servico && diaSelecionado && horaSelecionada;
+            btnConfirmar.disabled = !completo;
+
+            if (!completo) {
+                const faltando = [];
+                if (!servico) faltando.push('serviço');
+                if (!diaSelecionado) faltando.push('dia');
+                if (!horaSelecionada) faltando.push('horário');
+                resumo.innerHTML = 'Falta escolher: <strong>' + faltando.join(', ') + '</strong>.';
+                return;
+            }
+
+            const data = diaSelecionado;
+            const dataTexto = String(data.getDate()).padStart(2, '0') + '/' +
+                String(data.getMonth() + 1).padStart(2, '0') + '/' + data.getFullYear();
+
+            resumo.innerHTML =
+                '<strong>' + servico.nome + '</strong> — ' + servico.preco + '<br>' +
+                DIAS_SEMANA[data.getDay()] + ', ' + dataTexto + ' às <strong>' + horaSelecionada + '</strong>';
+        }
+
+        btnPrev.addEventListener('click', () => {
+            mesAtual = new Date(mesAtual.getFullYear(), mesAtual.getMonth() - 1, 1);
+            renderCalendario();
+        });
+
+        btnNext.addEventListener('click', () => {
+            mesAtual = new Date(mesAtual.getFullYear(), mesAtual.getMonth() + 1, 1);
+            renderCalendario();
+        });
+
+        selServico.addEventListener('change', atualizarResumo);
+
+        btnConfirmar.addEventListener('click', () => {
+            const servico = servicoAtual();
+            if (!servico || !diaSelecionado || !horaSelecionada) return;
+
+            const data = diaSelecionado;
+            const dataTexto = String(data.getDate()).padStart(2, '0') + '/' +
+                String(data.getMonth() + 1).padStart(2, '0') + '/' + data.getFullYear();
+
+            const params = new URLSearchParams({
+                servico: servico.nome,
+                preco: servico.preco,
+                dia: DIAS_SEMANA[data.getDay()],
+                data: dataTexto,
+                hora: horaSelecionada
+            });
+
+            window.location.href = 'pagamento.html?' + params.toString();
+        });
+
+        // Serviço vindo da página anterior
+        const normalizar = s => (s || '').toLowerCase()
+            .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+            .replace(/[^a-z0-9]/g, '');
+
+        const params = new URLSearchParams(window.location.search);
+        const servicoParam = params.get('servico');
+        if (servicoParam) {
+            for (const opt of selServico.options) {
+                if (opt.value && normalizar(opt.value.split('|')[0]) === normalizar(servicoParam)) {
+                    selServico.value = opt.value;
+                    break;
+                }
+            }
+        }
+
+        renderCalendario();
+        renderHorarios();
+        atualizarResumo();
+    </script>
+</body>
+
+</html>

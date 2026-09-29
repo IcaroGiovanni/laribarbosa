@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Pagamento via Pix do sinal de 50% - Larissa Barbosa Nail Designer.">
+    <title>Pix - Pagamento do Sinal | Larissa Barbosa</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Poppins:wght@300;400;500;600&display=swap"
+        rel="stylesheet">
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="style.css">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body>
+
+    <!-- Animated Background Bubbles -->
+    <div class="area">
+        <ul class="circles">
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+        </ul>
+    </div>
+
+    <main class="bio-wrapper show-content">
+
+        <!-- Header -->
+        <header class="bio-header text-center">
+            <div class="profile-container">
+                <img src="ela.jpeg" alt="Larissa Barbosa" class="profile-pic-main">
+                <div class="status-dot"></div>
+            </div>
+
+            <div class="bio-name-wrapper">
+                <h1 class="bio-name">Larissa Barbosa</h1>
+                <div class="verified-badge"><i class="fas fa-check-circle"></i></div>
+            </div>
+
+            <div class="header-badges">
+                <span class="header-tag">Pagamento via Pix</span>
+            </div>
+
+            <p class="bio-description">
+                Pague os 50% do sinal para garantir a sua data.<br>
+                📍 Confisco, Belo Horizonte - MG
+            </p>
+        </header>
+
+        <!-- Resumo -->
+        <section class="bio-section">
+            <h2 class="section-title">Seu Agendamento</h2>
+
+            <div class="bio-card pay-summary">
+                <div class="pay-summary-row">
+                    <span>Serviço</span>
+                    <strong id="resumo-servico">—</strong>
+                </div>
+                <div class="pay-summary-row">
+                    <span>Dia</span>
+                    <strong id="resumo-dia">—</strong>
+                </div>
+                <div class="pay-summary-row">
+                    <span>Horário</span>
+                    <strong id="resumo-hora">—</strong>
+                </div>
+                <div class="pay-summary-row pay-total">
+                    <span>Sinal de 50%</span>
+                    <strong id="resumo-sinal">—</strong>
+                </div>
+            </div>
+        </section>
+
+        <!-- Relógio -->
+        <section class="bio-section">
+            <div class="pix-clock-wrap">
+                <span class="pix-clock-label">Tempo para pagar</span>
+                <div class="pix-clock" id="relogio">10:00</div>
+                <span class="pix-clock-hint" id="relogio-aviso">O valor pode ser pago enquanto o relógio estiver rodando.</span>
+            </div>
+        </section>
+
+        <!-- Chave Pix -->
+        <section class="bio-section">
+            <h2 class="section-title">Chave Pix</h2>
+
+            <div class="pix-key-card">
+                <span class="pix-key-label">Chave (telefone)</span>
+                <div class="pix-key-row">
+                    <span class="pix-key" id="chave-pix">31993339797</span>
+                    <button type="button" class="pix-copy" id="btn-copiar">
+                        <i class="fas fa-copy"></i> Copiar
+                    </button>
+                </div>
+                <span class="pix-key-feedback" id="copiar-feedback"></span>
+            </div>
+        </section>
+
+        <!-- Aviso + botão -->
+        <section class="bio-section">
+            <div class="bio-card sales-card">
+                <div class="sales-badge">Atenção</div>
+                <h2>Concluiu o pagamento dos 50%?</h2>
+                <p>Quando concluir o pagamento dos 50%, aperte no botão aqui embaixo. Ele vai direto para o WhatsApp da
+                    Larissa com a mensagem e o horário já preenchidos — é só anexar o comprovante.</p>
+
+                <a id="btn-enviar-comprovante" href="https://wa.me/5531991628750" target="_blank"
+                    class="bio-btn bio-btn-primary">
+                    <i class="fab fa-whatsapp"></i> JÁ PAGUEI, ENVIAR COMPROVANTE
+                </a>
+
+                <a href="pagamento.html" id="btn-voltar-pagamento" class="policy-back-link">
+                    <i class="fas fa-arrow-left"></i> Voltar e escolher outra forma de pagamento
+                </a>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="text-center bio-footer">
+            <div class="social-row">
+                <a href="https://instagram.com/naildesignerericasilva" target="_blank"><i class="fab fa-instagram"></i></a>
+                <a href="https://wa.me/5531991628750" target="_blank"><i class="fab fa-whatsapp"></i></a>
+            </div>
+            <p>Larissa Barbosa © 2025</p>
+        </footer>
+
+    </main>
+
+    <!-- Floating WA -->
+    <a href="https://wa.me/5531991628750" class="floating-whatsapp" target="_blank">
+        <i class="fab fa-whatsapp"></i>
+    </a>
+
+    <script>
+        const params = new URLSearchParams(window.location.search);
+        const servico = params.get('servico') || '';
+        const preco = params.get('preco') || '';
+        const dia = params.get('dia') || '';
+        const data = params.get('data') || '';
+        const hora = params.get('hora') || '';
+
+        function valorSinal() {
+            const limpo = preco.replace(/[^\d,]/g, '').replace(',', '.');
+            const valor = parseFloat(limpo);
+            if (isNaN(valor)) return '';
+            return 'R$ ' + (valor / 2).toFixed(2).replace('.', ',');
+        }
+
+        document.getElementById('resumo-servico').textContent = servico || '—';
+        document.getElementById('resumo-dia').textContent = (dia && data) ? dia + ', ' + data : '—';
+        document.getElementById('resumo-hora').textContent = hora || '—';
+        document.getElementById('resumo-sinal').textContent = valorSinal() || '50%';
+
+        // Relógio regressivo de 10 minutos
+        let segundos = 10 * 60;
+        const relogio = document.getElementById('relogio');
+        const avisoRelogio = document.getElementById('relogio-aviso');
+
+        function pintarRelogio() {
+            const m = String(Math.floor(segundos / 60)).padStart(2, '0');
+            const s = String(segundos % 60).padStart(2, '0');
+            relogio.textContent = m + ':' + s;
+        }
+
+        pintarRelogio();
+
+        const intervalo = setInterval(() => {
+            segundos--;
+            pintarRelogio();
+
+            if (segundos <= 0) {
+                clearInterval(intervalo);
+                relogio.classList.add('pix-clock-expired');
+                avisoRelogio.textContent = 'O tempo acabou. Chame a Larissa no WhatsApp para verificar a disponibilidade.';
+            }
+        }, 1000);
+
+        // Copiar chave Pix
+        const btnCopiar = document.getElementById('btn-copiar');
+        const feedback = document.getElementById('copiar-feedback');
+
+        btnCopiar.addEventListener('click', () => {
+            const chave = document.getElementById('chave-pix').textContent.trim();
+
+            function feedbackOk() {
+                feedback.textContent = 'Chave copiada!';
+                setTimeout(() => feedback.textContent = '', 2500);
+            }
+
+            function fallback() {
+                const input = document.createElement('input');
+                input.value = chave;
+                document.body.appendChild(input);
+                input.select();
+                try { document.execCommand('copy'); feedbackOk(); } catch (e) { }
+                document.body.removeChild(input);
+            }
+
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(chave).then(feedbackOk).catch(fallback);
+            } else {
+                fallback();
+            }
+        });
+
+        // Botão do comprovante
+        const sinal = valorSinal();
+        const mensagem = [
+            'Oi, Larissa! Queria confirmar meu atendimento.',
+            '',
+            'Serviço: ' + servico + ' (' + preco + ')',
+            'Dia: ' + dia + ', ' + data,
+            'Horário: ' + hora,
+            sinal ? 'Sinal de 50% pago: ' + sinal : '',
+            '',
+            'Aqui está o comprovante dos 50%.'
+        ].filter(Boolean).join('\n');
+
+        document.getElementById('btn-enviar-comprovante').href =
+            'https://wa.me/5531991628750?text=' + encodeURIComponent(mensagem);
+
+        document.getElementById('btn-voltar-pagamento').href = 'pagamento.html?' + params.toString();
+    </script>
+</body>
+
+</html>
