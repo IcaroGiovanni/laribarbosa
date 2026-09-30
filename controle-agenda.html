@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Controle da Agenda - Larissa Barbosa</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        .ctrl-box {
+            background: #fff;
+            border: 1px solid rgba(169, 113, 78, 0.18);
+            border-radius: 18px;
+            padding: 24px 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
+        }
+
+        .ctrl-box + .ctrl-box {
+            margin-top: 16px;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .ctrl-label {
+            display: block;
+            font-size: 0.78rem;
+            font-weight: 700;
+            letter-spacing: 1.2px;
+            text-transform: uppercase;
+            color: #8a7f76;
+            margin: 16px 0 7px;
+        }
+
+        .ctrl-input {
+            width: 100%;
+            padding: 13px 15px;
+            border: 1.5px solid rgba(169, 113, 78, 0.35);
+            border-radius: 12px;
+            font-family: var(--font-body);
+            font-size: 0.95rem;
+            color: var(--color-text);
+            background: #FDFBF9;
+            outline: none;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .ctrl-input:focus {
+            border-color: var(--color-primary-dark);
+            box-shadow: 0 0 0 4px rgba(169, 113, 78, 0.14);
+        }
+
+        .ctrl-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            width: 100%;
+            margin-top: 16px;
+            padding: 14px 18px;
+            border: none;
+            border-radius: 30px;
+            background: var(--color-primary-dark);
+            color: #fff;
+            font-family: var(--font-body);
+            font-size: 0.82rem;
+            font-weight: 700;
+            letter-spacing: 1.4px;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.25s ease;
+        }
+
+        .ctrl-btn:hover {
+            background: #8A5A3B;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 22px rgba(169, 113, 78, 0.4);
+        }
+
+        .ctrl-btn.ctrl-btn-ghost {
+            background: transparent;
+            color: var(--color-primary-dark);
+            border: 1.5px solid rgba(169, 113, 78, 0.5);
+        }
+
+        .ctrl-btn.ctrl-btn-ghost:hover {
+            background: rgba(169, 113, 78, 0.1);
+            box-shadow: none;
+        }
+
+        .ctrl-btn.ctrl-btn-dark {
+            background: #1F1512;
+        }
+
+        .ctrl-btn.ctrl-btn-dark:hover {
+            background: #3E2b26;
+        }
+
+        .ctrl-error {
+            margin-top: 12px;
+            padding: 11px 14px;
+            border-radius: 10px;
+            background: #fdecec;
+            color: #a02727;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .ctrl-feedback {
+            margin-top: 12px;
+            min-height: 20px;
+            font-size: 0.82rem;
+            color: var(--color-primary-dark);
+            font-weight: 600;
+        }
+
+        .ctrl-status {
+            display: inline-block;
+            padding: 11px 24px;
+            border-radius: 26px;
+            font-size: 0.85rem;
+            font-weight: 800;
+            letter-spacing: 1.6px;
+            text-transform: uppercase;
+            color: #fff;
+            transition: background 0.3s ease;
+        }
+
+        .ctrl-status.aberta {
+            background: #2f7d4f;
+        }
+
+        .ctrl-status.fechada {
+            background: #8a3a2f;
+        }
+
+        .ctrl-status-hint {
+            margin-top: 10px;
+            font-size: 0.88rem;
+            color: #7d7269;
+        }
+
+        .ctrl-switch-row {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-top: 20px;
+            padding: 16px;
+            background: #FBF7F3;
+            border: 1px solid rgba(169, 113, 78, 0.16);
+            border-radius: 14px;
+        }
+
+        .ctrl-switch {
+            position: relative;
+            display: inline-block;
+            width: 64px;
+            height: 34px;
+            flex-shrink: 0;
+        }
+
+        .ctrl-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .ctrl-slider {
+            position: absolute;
+            cursor: pointer;
+            inset: 0;
+            background: #c9beb4;
+            border-radius: 34px;
+            transition: 0.3s;
+        }
+
+        .ctrl-slider:before {
+            content: '';
+            position: absolute;
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background: #fff;
+            border-radius: 50%;
+            transition: 0.3s;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+        }
+
+        .ctrl-switch input:checked+.ctrl-slider {
+            background: var(--color-primary-dark);
+        }
+
+        .ctrl-switch input:checked+.ctrl-slider:before {
+            transform: translateX(30px);
+        }
+
+        .ctrl-switch-text strong {
+            display: block;
+            font-size: 0.95rem;
+            color: var(--color-text);
+        }
+
+        .ctrl-switch-text span {
+            font-size: 0.8rem;
+            color: #8a7f76;
+        }
+
+        .ctrl-note {
+            margin-top: 18px;
+            padding: 14px 16px;
+            border-left: 4px solid var(--color-primary-dark);
+            background: #F6EBDF;
+            border-radius: 0 12px 12px 0;
+            font-size: 0.85rem;
+            line-height: 1.6;
+            color: #5a4a3d;
+        }
+
+        .ctrl-note i {
+            color: var(--color-primary-dark);
+            margin-right: 6px;
+        }
+
+        .ctrl-row {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .ctrl-row .ctrl-btn {
+            flex: 1 1 180px;
+        }
+
+        .ctrl-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .ctrl-title i {
+            color: var(--color-primary-dark);
+        }
+
+        .ctrl-back {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            margin-top: 18px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            color: var(--color-primary-dark);
+        }
+    </style>
+</head>
+
+<body>
+    <main class="bio-wrapper show-content">
+        <section class="bio-section">
+            <h2 class="section-title ctrl-title"><i class="fas fa-lock"></i> Controle da Agenda</h2>
+
+            <!-- Login -->
+            <div id="view-login" class="ctrl-box hidden">
+                <label class="ctrl-label" for="senha">Senha</label>
+                <input type="password" id="senha" class="ctrl-input" autocomplete="current-password"
+                    placeholder="Digite sua senha">
+
+                <div id="erro-login" class="ctrl-error hidden">Senha incorreta. Tente novamente.</div>
+
+                <button type="button" class="ctrl-btn" id="btn-entrar">
+                    <i class="fas fa-sign-in-alt"></i> Entrar
+                </button>
+
+                <a class="ctrl-back" href="index.html"><i class="fas fa-arrow-left"></i> Voltar para o site</a>
+            </div>
+
+            <!-- Painel -->
+            <div id="view-painel" class="hidden">
+                <div class="ctrl-box">
+                    <span id="status-pill" class="ctrl-status aberta">Agenda aberta</span>
+                    <p id="status-hint" class="ctrl-status-hint">O site está aceitando agendamentos.</p>
+
+                    <div class="ctrl-switch-row">
+                        <label class="ctrl-switch">
+                            <input type="checkbox" id="sw-aberta">
+                            <span class="ctrl-slider"></span>
+                        </label>
+                        <span class="ctrl-switch-text">
+                            <strong id="sw-titulo">Agenda aberta</strong>
+                            <span>Desligue para fechar os agendamentos no site</span>
+                        </span>
+                    </div>
+
+                    <label class="ctrl-label" for="inp-aviso">Aviso exibido quando a agenda está fechada</label>
+                    <input type="text" id="inp-aviso" class="ctrl-input"
+                        placeholder="Agenda fechada no momento. Os botões de agendamento estão desativados.">
+
+                    <div id="feedback" class="ctrl-feedback"></div>
+
+                    <button type="button" class="ctrl-btn ctrl-btn-dark" id="btn-baixar">
+                        <i class="fas fa-download"></i> Baixar agenda-config.js (para valer em todo o site)
+                    </button>
+
+                    <div class="ctrl-note">
+                        <i class="fas fa-circle-info"></i>
+                        A troca acima já vale <strong>na hora, neste aparelho</strong>. Para valer para todo mundo,
+                        toque em <strong>Baixar agenda-config.js</strong> e substitua o arquivo na hospedagem do site.
+                    </div>
+                </div>
+
+                <div class="ctrl-box">
+                    <div class="ctrl-row">
+                        <button type="button" class="ctrl-btn ctrl-btn-ghost" id="btn-ver-senha">
+                            <i class="fas fa-key"></i> Alterar senha
+                        </button>
+                        <button type="button" class="ctrl-btn ctrl-btn-ghost" id="btn-limpar">
+                            <i class="fas fa-eraser"></i> Limpar configuração local
+                        </button>
+                        <button type="button" class="ctrl-btn ctrl-btn-ghost" id="btn-sair">
+                            <i class="fas fa-sign-out-alt"></i> Sair
+                        </button>
+                    </div>
+
+                    <div id="form-senha" class="hidden">
+                        <label class="ctrl-label" for="senha-atual">Senha atual</label>
+                        <input type="password" id="senha-atual" class="ctrl-input" autocomplete="current-password">
+
+                        <label class="ctrl-label" for="senha-nova">Nova senha</label>
+                        <input type="password" id="senha-nova" class="ctrl-input" autocomplete="new-password">
+
+                        <div id="erro-senha" class="ctrl-error hidden"></div>
+
+                        <button type="button" class="ctrl-btn" id="btn-salvar-senha">
+                            <i class="fas fa-save"></i> Salvar nova senha
+                        </button>
+                    </div>
+
+                    <a class="ctrl-back" href="index.html"><i class="fas fa-arrow-left"></i> Voltar para o site</a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        (function () {
+            var K_SENHA = 'agendaSenhaHash';
+            var K_SENHA_VER = 'agendaSenhaVer';
+            var K_ESTADO = 'agendaEstado';
+            var K_LOGADO = 'agendaLogado';
+            var SENHA_PADRAO = 'larinex123';
+            var AVISO_PADRAO = 'Agenda fechada no momento. Os botões de agendamento estão desativados.';
+
+            function $(id) { return document.getElementById(id); }
+
+            function hash(s) {
+                var str = 'lb-agenda|' + s + '|2026';
+                var h = 0x811c9dc5;
+                for (var i = 0; i < str.length; i++) {
+                    h ^= str.charCodeAt(i);
+                    h = Math.imul(h, 0x01000193) >>> 0;
+                }
+                return ('00000000' + h.toString(16)).slice(-8);
+            }
+
+            function hashSalvo() {
+                try {
+                    return localStorage.getItem(K_SENHA) || hash(SENHA_PADRAO);
+                } catch (e) { return hash(SENHA_PADRAO); }
+            }
+
+            function mostrar(view) {
+                ['view-login', 'view-painel'].forEach(function (v) {
+                    $(v).classList.toggle('hidden', v !== view);
+                });
+            }
+
+            function lerEstado() {
+                try {
+                    var s = localStorage.getItem(K_ESTADO);
+                    if (s) return JSON.parse(s);
+                } catch (e) { }
+                return { aberta: true, aviso: AVISO_PADRAO };
+            }
+
+            function salvarEstado(e) {
+                try { localStorage.setItem(K_ESTADO, JSON.stringify(e)); } catch (err) { }
+            }
+
+            function pintarPainel() {
+                var e = lerEstado();
+                $('sw-aberta').checked = e.aberta;
+                $('inp-aviso').value = e.aviso || AVISO_PADRAO;
+                $('status-pill').textContent = e.aberta ? 'Agenda aberta' : 'Agenda fechada';
+                $('status-pill').className = 'ctrl-status ' + (e.aberta ? 'aberta' : 'fechada');
+                $('sw-titulo').textContent = e.aberta ? 'Agenda aberta' : 'Agenda fechada';
+                $('status-hint').textContent = e.aberta
+                    ? 'O site está aceitando agendamentos.'
+                    : 'Os botões de agendamento estão desativados no site.';
+            }
+
+            function atualizar() {
+                var e = lerEstado();
+                e.aberta = $('sw-aberta').checked;
+                e.aviso = ($('inp-aviso').value || '').trim() || AVISO_PADRAO;
+                e.atualizado = new Date().toISOString();
+                salvarEstado(e);
+                pintarPainel();
+                $('feedback').textContent = 'Salvo às ' +
+                    new Date().toLocaleTimeString('pt-BR') + ' (neste aparelho)';
+            }
+
+            function erro(id, msg) {
+                var el = $(id);
+                el.textContent = msg;
+                el.classList.remove('hidden');
+            }
+
+            function limparErro(id) { $(id).classList.add('hidden'); }
+
+            function iniciar() {
+                try {
+                    if (localStorage.getItem(K_SENHA_VER) !== '2') {
+                        localStorage.setItem(K_SENHA, hash(SENHA_PADRAO));
+                        localStorage.setItem(K_SENHA_VER, '2');
+                    }
+                } catch (e) { }
+                if (sessionStorage.getItem(K_LOGADO)) {
+                    mostrar('view-painel');
+                    pintarPainel();
+                } else {
+                    mostrar('view-login');
+                }
+            }
+
+            /* Login */
+            $('btn-entrar').addEventListener('click', function () {
+                limparErro('erro-login');
+                if (hash($('senha').value) === hashSalvo()) {
+                    sessionStorage.setItem(K_LOGADO, '1');
+                    $('senha').value = '';
+                    mostrar('view-painel');
+                    pintarPainel();
+                } else {
+                    erro('erro-login', 'Senha incorreta. Tente novamente.');
+                }
+            });
+
+            $('senha').addEventListener('keydown', function (e) {
+                if (e.key === 'Enter') $('btn-entrar').click();
+            });
+
+            /* Painel */
+            $('sw-aberta').addEventListener('change', atualizar);
+            $('inp-aviso').addEventListener('change', atualizar);
+
+            $('btn-baixar').addEventListener('click', function () {
+                var e = lerEstado();
+                var conteudo = '/* =========================================================\n' +
+                    '   CONFIGURACAO DA AGENDA - Larissa Barbosa\n' +
+                    '   ---------------------------------------------------------\n' +
+                    '   Gerado pela pagina de controle em ' + new Date().toLocaleString('pt-BR') + '\n' +
+                    '   aberta: true  -> agenda aberta\n' +
+                    '   aberta: false -> agenda fechada\n' +
+                    '   ========================================================= */\n' +
+                    'window.AGENDA = {\n' +
+                    '    aberta: ' + (e.aberta ? 'true' : 'false') + ',\n' +
+                    '    aviso: ' + JSON.stringify(e.aviso || AVISO_PADRAO) + '\n' +
+                    '};\n';
+
+                var blob = new Blob([conteudo], { type: 'application/javascript;charset=utf-8' });
+                var url = URL.createObjectURL(blob);
+                var a = document.createElement('a');
+                a.href = url;
+                a.download = 'agenda-config.js';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                $('feedback').textContent = 'Arquivo baixado. Substitua o agenda-config.js na hospedagem.';
+            });
+
+            $('btn-ver-senha').addEventListener('click', function () {
+                $('form-senha').classList.toggle('hidden');
+            });
+
+            $('btn-salvar-senha').addEventListener('click', function () {
+                limparErro('erro-senha');
+                if (hash($('senha-atual').value) !== hashSalvo()) {
+                    return erro('erro-senha', 'Senha atual incorreta.');
+                }
+                var nova = $('senha-nova').value;
+                if (nova.length < 4) return erro('erro-senha', 'A nova senha precisa de pelo menos 4 caracteres.');
+                localStorage.setItem(K_SENHA, hash(nova));
+                localStorage.setItem(K_SENHA_VER, '2');
+                $('senha-atual').value = '';
+                $('senha-nova').value = '';
+                $('form-senha').classList.add('hidden');
+                $('feedback').textContent = 'Senha alterada com sucesso.';
+            });
+
+            $('btn-limpar').addEventListener('click', function () {
+                try { localStorage.removeItem(K_ESTADO); } catch (e) { }
+                pintarPainel();
+                $('feedback').textContent = 'Configuração local limpa (voltou ao padrão do arquivo).';
+            });
+
+            $('btn-sair').addEventListener('click', function () {
+                sessionStorage.removeItem(K_LOGADO);
+                mostrar('view-login');
+            });
+
+            iniciar();
+        })();
+    </script>
+</body>
+
+</html>

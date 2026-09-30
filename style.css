@@ -861,6 +861,28 @@ ul {
     font-size: 1.2rem;
 }
 
+.footer-login {
+    display: inline-block;
+    margin-top: 8px;
+    font-size: 0.68rem;
+    font-weight: 600;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    color: #b5aca3;
+    text-decoration: none;
+    opacity: 0.75;
+    transition: color 0.25s ease, opacity 0.25s ease;
+}
+
+.footer-login:hover {
+    color: var(--color-primary-dark);
+    opacity: 1;
+}
+
+.footer-login i {
+    margin-right: 4px;
+}
+
 @keyframes pulse {
     0% {
         box-shadow: 0 0 0 0 rgba(169, 113, 78, 0.7);
@@ -2567,51 +2589,6 @@ ul {
 }
 
 /* -------------------
-   Barra de anúncio
-   ------------------- */
-.announce-bar {
-    display: block;
-    position: sticky;
-    top: 0;
-    z-index: 6;
-    margin: -50px -25px 0;
-    overflow: hidden;
-    padding: 11px 0;
-    background: linear-gradient(90deg, #A9714E 0%, #4A3728 50%, #A9714E 100%);
-    color: #fff;
-    font-size: 0.76rem;
-    font-weight: 700;
-    letter-spacing: 1.4px;
-    text-transform: uppercase;
-    white-space: nowrap;
-    box-shadow: 0 6px 18px rgba(31, 21, 18, 0.35);
-    transition: filter 0.3s ease;
-}
-
-.announce-bar:hover {
-    filter: brightness(1.12);
-}
-
-.announce-track {
-    display: inline-flex;
-    animation: announceScroll 26s linear infinite;
-}
-
-.announce-bar:hover .announce-track {
-    animation-play-state: paused;
-}
-
-@keyframes announceScroll {
-    0% {
-        transform: translateX(0);
-    }
-
-    100% {
-        transform: translateX(-50%);
-    }
-}
-
-/* -------------------
    Tabela de tempo de atendimento
    ------------------- */
 .duration-wrap {
@@ -2705,6 +2682,48 @@ ul {
     margin-right: 5px;
 }
 
+/* -------------------
+   Agenda fechada
+   ------------------- */
+.agenda-closed-banner {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin: -50px -25px 0;
+    padding: 14px 16px;
+    background: linear-gradient(135deg, #1F1512 0%, #3E2b26 100%);
+    color: #EAD9C6;
+    font-size: 0.86rem;
+    font-weight: 600;
+    text-align: center;
+    line-height: 1.5;
+    border-bottom: 3px solid #A9714E;
+}
+
+.agenda-closed-banner i {
+    color: #A9714E;
+    flex-shrink: 0;
+}
+
+.btn-agenda-off {
+    opacity: 0.5;
+    filter: grayscale(0.6);
+    cursor: not-allowed;
+    pointer-events: none;
+    animation: none !important;
+    box-shadow: none !important;
+    transform: none !important;
+}
+
+body.agenda-fechada .booking-step,
+body.agenda-fechada .booking-summary,
+body.agenda-fechada #btn-confirmar {
+    opacity: 0.45;
+    pointer-events: none;
+    filter: grayscale(0.6);
+}
+
 /* Mobile Responsive */
 @media (max-width: 480px) {
     .btn-whatsapp-pulse {
@@ -2777,12 +2796,6 @@ ul {
         font-size: 2.2rem;
     }
 
-    .announce-bar {
-        font-size: 0.68rem;
-        letter-spacing: 0.8px;
-        padding: 9px 0;
-    }
-
     .duration-table {
         font-size: 0.85rem;
     }
@@ -2790,5 +2803,10 @@ ul {
     .duration-table thead th,
     .duration-table tbody td {
         padding: 11px 12px;
+    }
+
+    .agenda-closed-banner {
+        font-size: 0.78rem;
+        padding: 12px 14px;
     }
 }
