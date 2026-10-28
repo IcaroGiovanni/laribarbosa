@@ -21,7 +21,7 @@
 
     var SERVICOS = [
         'Alongamento Natural', 'Alongamento Natural + Cutícula', 'Alongamento Decorado',
-        'Alongamento com Decoração 3D', 'Alongamento Decorado + Cutícula', 'Banho de Gel',
+        'Alongamento Decorado + Cutícula', 'Banho de Gel',
         'Banho de Gel + Cutícula', 'Banho de Gel Decorado + Cutícula', 'Manutenção Natural',
         'Manutenção Decorada', 'Manutenção Decorada + Cutícula', 'Reposição de unha (fora da manutenção)',
         'Manicure Tradicional', 'Manicure & Pedicure', 'Pedicure Tradicional', 'Pedicure Premium',

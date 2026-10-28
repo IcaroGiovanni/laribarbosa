@@ -2444,6 +2444,22 @@ textarea.booking-field {
     background: #fdfaf7;
 }
 
+.price-note {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    padding: 13px 16px 15px;
+    font-size: 0.8rem;
+    line-height: 1.5;
+    color: #8a7f76;
+    background: #FBF7F3;
+}
+
+.price-note i {
+    color: var(--color-primary-dark);
+    margin-top: 2px;
+}
+
 .price-item-top {
     display: flex;
     justify-content: space-between;
