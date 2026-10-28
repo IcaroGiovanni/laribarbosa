@@ -148,6 +148,8 @@
 
     <script src="agenda-config.js"></script>
     <script src="agenda.js"></script>
+    <script src="agenda-firebase.js"></script>
+    <script src="agenda-db.js"></script>
     <script>
         const params = new URLSearchParams(window.location.search);
         const servico = params.get('servico') || '';
@@ -155,6 +157,9 @@
         const dia = params.get('dia') || '';
         const data = params.get('data') || '';
         const hora = params.get('hora') || '';
+        const nome = params.get('nome') || '';
+        const obs = params.get('obs') || '';
+        const registroId = params.get('id') || '';
 
         function valorSinal() {
             const limpo = preco.replace(/[^\d,]/g, '').replace(',', '.');
@@ -225,16 +230,25 @@
         const mensagem = [
             'Oi, Larissa! Queria confirmar meu atendimento.',
             '',
+            nome ? 'Nome: ' + nome : '',
             'Serviço: ' + servico + ' (' + preco + ')',
             'Dia: ' + dia + ', ' + data,
             'Horário: ' + hora,
             sinal ? 'Sinal de 50% pago: ' + sinal : '',
+            obs ? 'Observação: ' + obs : '',
             '',
             'Aqui está o comprovante dos 50%.'
         ].filter(Boolean).join('\n');
 
-        document.getElementById('btn-enviar-comprovante').href =
-            'https://wa.me/5531991628750?text=' + encodeURIComponent(mensagem);
+        const btnComprovante = document.getElementById('btn-enviar-comprovante');
+        btnComprovante.href = 'https://wa.me/5531991628750?text=' + encodeURIComponent(mensagem);
+
+        btnComprovante.addEventListener('click', () => {
+            if (!registroId || !window.AgendaDB) return;
+            window.AgendaDB.atualizar(registroId, { status: 'sinal_enviado' }).catch(err => {
+                console.warn('[Pix] Não foi possível atualizar a agenda.', err);
+            });
+        });
 
         document.getElementById('btn-voltar-pagamento').href = 'pagamento.html?' + params.toString();
     </script>

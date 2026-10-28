@@ -139,6 +139,20 @@
                     </p>
                 </div>
 
+                <!-- Passo 4: Dados da cliente -->
+                <div class="booking-step">
+                    <div class="booking-step-title"><span>4</span> Seus dados</div>
+
+                    <input type="text" id="inp-nome" class="booking-select booking-field" maxlength="80"
+                        placeholder="Seu nome completo" autocomplete="name">
+                    <input type="tel" id="inp-fone" class="booking-select booking-field" maxlength="20"
+                        inputmode="tel" placeholder="Seu WhatsApp com DDD" autocomplete="tel">
+                    <textarea id="inp-obs" class="booking-select booking-field" rows="2" maxlength="400"
+                        placeholder="Alguma observação? (opcional)"></textarea>
+
+                    <div id="dados-erro" class="booking-error hidden"></div>
+                </div>
+
                 <!-- Resumo -->
                 <div class="booking-summary" id="resumo">
                     Selecione o serviço, o dia e o horário para continuar.
@@ -149,7 +163,8 @@
                 </button>
 
                 <p class="booking-note">
-                    <i class="fas fa-info-circle"></i> O horário só é reservado após o pagamento do sinal de 50%.
+                    <i class="fas fa-info-circle"></i> O horário só é reservado após o pagamento do sinal de 50% e a
+                    confirmação da Larissa no WhatsApp.
                 </p>
 
                 <a href="politica-pagamento.html" class="policy-back-link">
@@ -177,6 +192,8 @@
 
     <script src="agenda-config.js"></script>
     <script src="agenda.js"></script>
+    <script src="agenda-firebase.js"></script>
+    <script src="agenda-db.js"></script>
     <script>
         const DIAS_SEMANA = ['Domingo', 'Segunda-feira', 'Terça-feira', 'Quarta-feira', 'Quinta-feira', 'Sexta-feira', 'Sábado'];
         const MESES = ['janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho', 'julho', 'agosto', 'setembro', 'outubro', 'novembro', 'dezembro'];
@@ -198,6 +215,76 @@
         const selServico = document.getElementById('sel-servico');
         const resumo = document.getElementById('resumo');
         const btnConfirmar = document.getElementById('btn-confirmar');
+        const inpNome = document.getElementById('inp-nome');
+        const inpFone = document.getElementById('inp-fone');
+        const inpObs = document.getElementById('inp-obs');
+        const dadosErro = document.getElementById('dados-erro');
+
+        // Horários já ocupados: { '2026-11-03': ['09:00', '10:00'] }
+        let ocupados = {};
+        let registroId = null;
+
+        function iso(d) {
+            return d.getFullYear() + '-' +
+                String(d.getMonth() + 1).padStart(2, '0') + '-' +
+                String(d.getDate()).padStart(2, '0');
+        }
+
+        function aplicarOcupados(lista) {
+            const idAtual = new URLSearchParams(window.location.search).get('id');
+            ocupados = {};
+
+            (lista || []).forEach(item => {
+                if (!item || item.status === 'cancelado') return;
+                if (item.id === idAtual) return; // não bloqueia o próprio agendamento
+                if (!item.data || !item.hora) return;
+                if (!ocupados[item.data]) ocupados[item.data] = [];
+                ocupados[item.data].push(item.hora);
+            });
+
+            if (diaSelecionado && horaSelecionada &&
+                (ocupados[iso(diaSelecionado)] || []).indexOf(horaSelecionada) >= 0) {
+                horaSelecionada = '';
+                atualizarResumo();
+            }
+            renderHorarios();
+        }
+
+        function carregarOcupados() {
+            if (!window.AgendaDB) return;
+
+            // Mantém os horários atualizados em tempo real quando a Larissa
+            // confirma, edita ou remove atendimentos na agenda.
+            if (!window.__agendaOcupadosObs) {
+                window.__agendaOcupadosObs = window.AgendaDB.observar(aplicarOcupados);
+            }
+        }
+
+        function mostrarErroDados(mensagem) {
+            dadosErro.textContent = mensagem;
+            dadosErro.classList.remove('hidden');
+        }
+
+        function dadosCliente() {
+            dadosErro.classList.add('hidden');
+
+            const nome = inpNome.value.trim();
+            const telefone = inpFone.value.trim();
+            const digitos = telefone.replace(/\D/g, '');
+
+            if (nome.length < 2) {
+                mostrarErroDados('Digite seu nome completo para continuar.');
+                inpNome.focus();
+                return null;
+            }
+            if (digitos.length < 10 || digitos.length > 11) {
+                mostrarErroDados('Digite seu WhatsApp com DDD (ex.: 31 99999-9999).');
+                inpFone.focus();
+                return null;
+            }
+
+            return { nome: nome, telefone: telefone, obs: inpObs.value.trim() };
+        }
 
         function mesmoDia(a, b) {
             return a && b && a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate();
@@ -252,12 +339,18 @@
 
             const agora = new Date();
             const ehHoje = mesmoDia(diaSelecionado, agora);
+            const tomados = ocupados[iso(diaSelecionado)] || [];
 
             slotsEl.innerHTML = HORARIOS.map(h => {
                 const passou = ehHoje && parseInt(h, 10) <= agora.getHours();
-                const cls = h === horaSelecionada ? 'slot selected' : 'slot';
-                return '<button type="button" class="' + cls + '" data-hora="' + h + '"' +
-                    (passou ? ' disabled' : '') + '>' + h + '</button>';
+                const ocupado = tomados.indexOf(h) >= 0;
+                const classes = ['slot'];
+                if (h === horaSelecionada) classes.push('selected');
+                if (ocupado) classes.push('ocupado');
+                return '<button type="button" class="' + classes.join(' ') + '" data-hora="' + h + '"' +
+                    ((passou || ocupado) ? ' disabled' : '') +
+                    (ocupado ? ' title="Horário já reservado"' : '') +
+                    '>' + h + '</button>';
             }).join('');
 
             slotsEl.querySelectorAll('.slot').forEach(btn => {
@@ -311,9 +404,12 @@
 
         selServico.addEventListener('change', atualizarResumo);
 
-        btnConfirmar.addEventListener('click', () => {
+        btnConfirmar.addEventListener('click', async () => {
             const servico = servicoAtual();
             if (!servico || !diaSelecionado || !horaSelecionada) return;
+
+            const cliente = dadosCliente();
+            if (!cliente) return;
 
             const data = diaSelecionado;
             const dataTexto = String(data.getDate()).padStart(2, '0') + '/' +
@@ -324,8 +420,38 @@
                 preco: servico.preco,
                 dia: DIAS_SEMANA[data.getDay()],
                 data: dataTexto,
-                hora: horaSelecionada
+                hora: horaSelecionada,
+                nome: cliente.nome,
+                telefone: cliente.telefone
             });
+            if (cliente.obs) params.set('obs', cliente.obs);
+
+            btnConfirmar.disabled = true;
+            btnConfirmar.innerHTML = '<i class="fas fa-spinner fa-spin"></i> SALVANDO...';
+
+            let id = registroId;
+            if (window.AgendaDB) {
+                try {
+                    const salvo = await window.AgendaDB.salvar({
+                        id: registroId || undefined,
+                        nome: cliente.nome,
+                        telefone: cliente.telefone,
+                        servico: servico.nome,
+                        preco: servico.preco,
+                        data: iso(data),
+                        hora: horaSelecionada,
+                        obs: cliente.obs || '',
+                        status: 'aguardando',
+                        origem: 'site'
+                    });
+                    id = salvo.id;
+                    registroId = id;
+                } catch (err) {
+                    console.warn('[Agendamento] Não foi possível salvar na agenda online.', err);
+                }
+            }
+
+            if (id) params.set('id', id);
 
             window.location.href = 'pagamento.html?' + params.toString();
         });
@@ -346,9 +472,25 @@
             }
         }
 
+        // Retorno da página de pagamento: mantém os dados já preenchidos
+        if (params.get('id')) registroId = params.get('id');
+        if (params.get('nome')) inpNome.value = params.get('nome');
+        if (params.get('telefone')) inpFone.value = params.get('telefone');
+        if (params.get('obs')) inpObs.value = params.get('obs');
+        if (params.get('data')) {
+            const partes = params.get('data').split('/');
+            if (partes.length === 3) {
+                diaSelecionado = new Date(parseInt(partes[2], 10), parseInt(partes[1], 10) - 1, parseInt(partes[0], 10));
+                const mes = new Date(diaSelecionado.getFullYear(), diaSelecionado.getMonth(), 1);
+                if (mes >= new Date(hoje.getFullYear(), hoje.getMonth(), 1)) mesAtual = mes;
+            }
+        }
+        if (params.get('hora')) horaSelecionada = params.get('hora');
+
         renderCalendario();
         renderHorarios();
         atualizarResumo();
+        carregarOcupados();
     </script>
 </body>
 

@@ -1871,6 +1871,35 @@ ul {
     box-shadow: 0 0 0 3px rgba(169, 113, 78, 0.15);
 }
 
+.booking-field {
+    cursor: text;
+    margin-top: 10px;
+}
+
+.booking-field:first-child {
+    margin-top: 0;
+}
+
+textarea.booking-field {
+    resize: vertical;
+    min-height: 58px;
+    line-height: 1.5;
+}
+
+.booking-error {
+    margin-top: 12px;
+    padding: 10px 13px;
+    border-radius: 10px;
+    background: #fdecec;
+    color: #a02727;
+    font-size: 0.83rem;
+    font-weight: 600;
+}
+
+.booking-error.hidden {
+    display: none;
+}
+
 .calendar-nav {
     display: flex;
     align-items: center;
@@ -2004,6 +2033,15 @@ ul {
     border-color: var(--color-primary-dark);
     color: #fff;
     box-shadow: 0 5px 15px rgba(169, 113, 78, 0.35);
+}
+
+.slot.ocupado {
+    opacity: 0.4;
+    cursor: not-allowed;
+    text-decoration: line-through;
+    background: #f3ece5;
+    border-color: rgba(169, 113, 78, 0.2);
+    color: #8a7f76;
 }
 
 .booking-summary {

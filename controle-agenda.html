@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Controle da Agenda - Larissa Barbosa</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="agenda-admin.css">
     <link rel="stylesheet"
         href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
@@ -279,6 +280,45 @@
 
             <!-- Painel -->
             <div id="view-painel" class="hidden">
+                <!-- Agenda de atendimentos -->
+                <div class="ctrl-box agenda-box">
+                    <div class="agenda-head">
+                        <div>
+                            <h3 class="agenda-title"><i class="fas fa-calendar-days"></i> Agenda de atendimentos</h3>
+                            <p class="agenda-sub" id="agenda-origem">Carregando agenda...</p>
+                        </div>
+                        <button type="button" class="ctrl-btn agenda-new" id="btn-novo-atendimento">
+                            <i class="fas fa-plus"></i> Novo atendimento
+                        </button>
+                    </div>
+
+                    <div class="agenda-stats" id="agenda-stats"></div>
+
+                    <div class="agenda-filters">
+                        <input type="search" id="agenda-busca" class="ctrl-input"
+                            placeholder="Buscar por nome, serviço ou telefone" autocomplete="off">
+                        <select id="agenda-periodo" class="ctrl-input" aria-label="Período">
+                            <option value="proximos">Próximos atendimentos</option>
+                            <option value="hoje">Hoje</option>
+                            <option value="semana">Próximos 7 dias</option>
+                            <option value="mes">Este mês</option>
+                            <option value="passados">Anteriores</option>
+                            <option value="todos">Todos</option>
+                        </select>
+                        <select id="agenda-status" class="ctrl-input" aria-label="Status">
+                            <option value="todos">Todos os status</option>
+                            <option value="pendentes">Aguardando confirmação</option>
+                            <option value="aguardando">Só aguardando</option>
+                            <option value="sinal_enviado">Sinal enviado</option>
+                            <option value="confirmado">Confirmados</option>
+                            <option value="concluido">Concluídos</option>
+                            <option value="cancelado">Cancelados</option>
+                        </select>
+                    </div>
+
+                    <div id="agenda-lista" class="agenda-lista"></div>
+                </div>
+
                 <div class="ctrl-box">
                     <span id="status-pill" class="ctrl-status aberta">Agenda aberta</span>
                     <p id="status-hint" class="ctrl-status-hint">O site está aceitando agendamentos.</p>
@@ -344,6 +384,78 @@
         </section>
     </main>
 
+    <!-- Modal: novo/editar atendimento -->
+    <div id="modal-atendimento" class="agenda-modal hidden">
+        <div class="agenda-modal-box" role="dialog" aria-modal="true" aria-labelledby="modal-titulo">
+            <div class="agenda-modal-head">
+                <h3 id="modal-titulo">Novo atendimento</h3>
+                <button type="button" class="agenda-modal-close" id="btn-fechar-modal" aria-label="Fechar">
+                    <i class="fas fa-xmark"></i>
+                </button>
+            </div>
+
+            <form id="form-atendimento" novalidate>
+                <input type="hidden" id="f-id">
+
+                <label class="ctrl-label" for="f-nome">Nome da cliente</label>
+                <input type="text" id="f-nome" class="ctrl-input" maxlength="80" placeholder="Ex.: Maria Silva" required>
+
+                <label class="ctrl-label" for="f-telefone">WhatsApp</label>
+                <input type="tel" id="f-telefone" class="ctrl-input" inputmode="tel" maxlength="20"
+                    placeholder="(31) 99999-9999">
+
+                <div class="agenda-form-row">
+                    <div>
+                        <label class="ctrl-label" for="f-data">Data</label>
+                        <input type="date" id="f-data" class="ctrl-input" required>
+                    </div>
+                    <div>
+                        <label class="ctrl-label" for="f-hora">Horário</label>
+                        <input type="time" id="f-hora" class="ctrl-input" step="900" required>
+                    </div>
+                </div>
+
+                <label class="ctrl-label" for="f-servico">Serviço</label>
+                <input type="text" id="f-servico" class="ctrl-input" list="lista-servicos" maxlength="90"
+                    placeholder="Ex.: Alongamento Natural" required>
+                <datalist id="lista-servicos"></datalist>
+
+                <div class="agenda-form-row">
+                    <div>
+                        <label class="ctrl-label" for="f-valor">Valor</label>
+                        <input type="text" id="f-valor" class="ctrl-input" maxlength="20" placeholder="R$ 125,00">
+                    </div>
+                    <div>
+                        <label class="ctrl-label" for="f-status">Status</label>
+                        <select id="f-status" class="ctrl-input">
+                            <option value="aguardando">Aguardando confirmação</option>
+                            <option value="sinal_enviado">Sinal enviado</option>
+                            <option value="confirmado">Confirmado</option>
+                            <option value="concluido">Concluído</option>
+                            <option value="cancelado">Cancelado</option>
+                        </select>
+                    </div>
+                </div>
+
+                <label class="ctrl-label" for="f-obs">Observações</label>
+                <textarea id="f-obs" class="ctrl-input" rows="3" maxlength="400"
+                    placeholder="Ex.: cliente pediu decoração em tom nude"></textarea>
+
+                <div id="f-aviso" class="ctrl-error hidden"></div>
+
+                <div class="agenda-form-actions">
+                    <button type="button" class="ctrl-btn ctrl-btn-ghost" id="btn-cancelar-form">Cancelar</button>
+                    <button type="submit" class="ctrl-btn" id="btn-salvar-atendimento">
+                        <i class="fas fa-save"></i> Salvar atendimento
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="agenda-firebase.js"></script>
+    <script src="agenda-db.js"></script>
+    <script src="agenda-admin.js"></script>
     <script>
         (function () {
             var K_SENHA = 'agendaSenhaHash';
@@ -420,6 +532,10 @@
 
             function limparErro(id) { $(id).classList.add('hidden'); }
 
+            function iniciarAgenda() {
+                if (window.AgendaAdmin) window.AgendaAdmin.iniciar();
+            }
+
             function iniciar() {
                 try {
                     if (localStorage.getItem(K_SENHA_VER) !== '2') {
@@ -430,6 +546,7 @@
                 if (sessionStorage.getItem(K_LOGADO)) {
                     mostrar('view-painel');
                     pintarPainel();
+                    iniciarAgenda();
                 } else {
                     mostrar('view-login');
                 }
@@ -443,6 +560,7 @@
                     $('senha').value = '';
                     mostrar('view-painel');
                     pintarPainel();
+                    iniciarAgenda();
                 } else {
                     erro('erro-login', 'Senha incorreta. Tente novamente.');
                 }

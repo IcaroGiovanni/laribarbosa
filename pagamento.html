@@ -157,6 +157,8 @@
 
     <script src="agenda-config.js"></script>
     <script src="agenda.js"></script>
+    <script src="agenda-firebase.js"></script>
+    <script src="agenda-db.js"></script>
     <script>
         const params = new URLSearchParams(window.location.search);
         const servico = params.get('servico') || '';
@@ -164,6 +166,17 @@
         const dia = params.get('dia') || '';
         const data = params.get('data') || '';
         const hora = params.get('hora') || '';
+        const nome = params.get('nome') || '';
+        const telefone = params.get('telefone') || '';
+        const obs = params.get('obs') || '';
+        const registroId = params.get('id') || '';
+
+        function marcarSinalEnviado() {
+            if (!registroId || !window.AgendaDB) return;
+            window.AgendaDB.atualizar(registroId, { status: 'sinal_enviado' }).catch(err => {
+                console.warn('[Pagamento] Não foi possível atualizar a agenda.', err);
+            });
+        }
 
         function valorSinal() {
             const limpo = preco.replace(/[^\d,]/g, '').replace(',', '.');
@@ -190,14 +203,18 @@
             const mensagem = [
                 'Oi, Larissa! Queria confirmar meu atendimento.',
                 '',
+                nome ? 'Nome: ' + nome : '',
+                telefone ? 'WhatsApp: ' + telefone : '',
                 'Serviço: ' + servico + ' (' + preco + ')',
                 'Dia: ' + dia + ', ' + data,
                 'Horário: ' + hora,
                 'Forma de pagamento: ' + forma + taxa + (sinal ? ' — sinal de 50%: ' + sinal : ''),
+                obs ? 'Observação: ' + obs : '',
                 '',
                 'Quero garantir esse horário, combina?'
-            ].join('\n');
+            ].filter(Boolean).join('\n');
 
+            marcarSinalEnviado();
             window.open('https://wa.me/5531991628750?text=' + encodeURIComponent(mensagem), '_blank');
         }
 
@@ -206,7 +223,9 @@
 
         const linkVoltar = document.getElementById('btn-voltar');
         if (servico) {
-            linkVoltar.href = 'agendamento.html?servico=' + encodeURIComponent(servico);
+            const voltarParams = new URLSearchParams(params);
+            voltarParams.delete('dia');
+            linkVoltar.href = 'agendamento.html?' + voltarParams.toString();
         }
     </script>
 </body>
