@@ -61,10 +61,30 @@ uma única vez.
          "$id": {
            ".validate": "newData.hasChildren(['nome','servico','data','hora','status'])"
          }
+       },
+       "config": {
+         ".read": true,
+         ".write": true,
+         "agendaAberta": {
+           ".validate": "newData.isBoolean()"
+         },
+         "aviso": {
+           ".validate": "newData.isString() && newData.val().length <= 200"
+         },
+         "diasFechados": {
+           "$data": {
+             ".validate": "$data.matches(/^\\d{4}-\\d{2}-\\d{2}$/) && newData.hasChild('fechado') && newData.child('fechado').val() === true && (!newData.hasChild('motivo') || (newData.child('motivo').isString() && newData.child('motivo').val().length <= 140)) && (!newData.hasChild('criadoEm') || newData.child('criadoEm').isString())"
+           }
+         }
        }
      }
    }
    ```
+
+   > O arquivo pronto para copiar está em [`database.rules.json`](database.rules.json).
+   > O nó `config` é separado de `agendamentos`. As regras acima não alteram
+   > nem apagam nenhum agendamento já existente. O site só grava em
+   > `config/agendaAberta`, `config/aviso` e `config/diasFechados/<data>`.
 
 3. Clique em **Publicar**.
 
@@ -73,6 +93,34 @@ uma única vez.
 > salão pequeno isso costuma ser aceitável, mas não coloque dados sensíveis
 > (documentos, endereço completo, etc.) na agenda. Se quiser mais segurança,
 > podemos adicionar login real depois.
+
+### 4.1 Se aparecer "O banco recusou: Permissão negada pelas regras do banco"
+
+Este aviso significa que **as regras publicadas no Firebase não cobrem o nó
+`config`**. O sintoma é characteristicamente:
+
+- a lista "Datas fechadas" aparece vazia (ou só com o que está salvo no
+  aparelho), mesmo com datas fechadas no painel;
+- o painel informa que o dia "consta fechado apenas neste aparelho";
+- o interruptor de abrir/fechar a agenda também não sincroniza entre aparelhos.
+
+**Como conferir:** abra no navegador
+
+```
+https://larisabarbosa-f2c39-default-rtdb.firebaseio.com/config.json?shallow=true&auth=AIzaSyBSOeQAeEarc0Twq2SyazNBxRdGTgPSLrM
+```
+
+- `200` = as regras estão certas.
+- `401` = falta o bloco `"config"` nas regras — repita o passo 4 acima e
+  publique o arquivo `database.rules.json` inteiro.
+
+> Nada é apagado ao publicar as regras: regras são apenas permissões de
+> leitura/escrita, elas nunca removem dados do banco.
+
+> **Atenção:** depois de publicar, as datas que estavam salvas **só no
+> aparelho** (cache local) continuam salvas aqui, mas ainda não estão no
+> banco. Para levá-las ao banco, reabra a área da profissional com o painel
+> sincronizado e use a opção de sincronizar dias locais.
 
 ## 5. Colar as chaves no site
 
@@ -108,6 +156,17 @@ Salve e envie esse arquivo para a hospedagem junto com os demais.
 
 ## Como funciona a agenda
 
+- **Fechar dias específicos:** na área da profissional, use **Fechar agenda
+  em datas específicas** para bloquear um dia isolado ou um período inteiro
+  (inclusive datas distantes). As datas ficam salvas em
+  `config/diasFechados/<AAAA-MM-DD>` e o calendário da cliente desabilita
+  esses dias automaticamente, em tempo real.
+- **Agenda aberta/fechada geral:** o interruptor do painel vale para todos os
+  aparelhos, pois agora é salvo no Firebase em `config/agendaAberta` e
+  `config/aviso` (com o `localStorage` como reserva quando não há conexão).
+- **Dados protegidos:** a configuração usa somente o nó `config`. Nenhuma
+  rotina lê, sobrescreve ou apaga o nó `agendamentos`; as escritas são
+  parciais (`update`) ou em caminhos exatos (`config/diasFechados/<data>`).
 - **Status:** Aguardando confirmação → Sinal enviado (quando a cliente clica em
   "já paguei") → Confirmado → Concluído / Cancelado.
 - **Novo atendimento:** cadastro manual (origem "Manual").
@@ -130,7 +189,10 @@ feitos. A agenda avisa isso no topo com uma faixa vermelha.
 |---|---|
 | `agenda-firebase.js` | Chaves do Firebase (você preenche) |
 | `agenda-db.js` | Leitura/gravação dos agendamentos |
+| `agenda-config-db.js` | Configuração da agenda (agenda aberta/fechada, aviso e dias fechados) |
+| `agenda.js` | Aplica o estado da agenda no site inteiro |
 | `agenda-admin.js` | Agenda da profissional (lista, edição, WhatsApp) |
+| `agenda-admin-config.js` | Painel de fechar dias específicos |
 | `agenda-admin.css` | Estilos da agenda |
 | `controle-agenda.html` | Área da profissional com a agenda |
 | `agendamento.html` | Coleta nome/WhatsApp e cria o agendamento |

@@ -17,6 +17,130 @@
     'use strict';
 
     var KEY = 'agendaAtendimentos';
+
+    /* =========================================================
+       MAPEAMENTO DE DURACOES DOS SERVICOS (em minutos)
+       ---------------------------------------------------------
+       Servicos mapeados na tabela "Tempo de Atendimento" do index.html.
+       Servicos nao mapeados (decorações 3D, pedrarias, etc.) retornam
+       null -> tratados como "sob consulta" (nao bloqueiam automaticamente).
+       ========================================================= */
+    var DURACOES = {
+        // Alongamento (qualquer variante)
+        'Alongamento': 180,          // 3h00
+        // Manutencao
+        'Manutenção Natural': 100,   // 1h40
+        'Manutenção Decorada': 150,  // 2h30
+        // Manicure
+        'Manicure Tradicional': 60,  // 1h00
+        'Manicure & Pedicure': 120,  // 2h00
+        // Pedicure
+        'Pedicure Tradicional': 60,  // 1h00
+        'Pedicure Premium': 60,      // 1h00
+    };
+
+    function normalizarServico(servico) {
+        if (typeof servico !== 'string') return '';
+        return servico.trim();
+    }
+
+    function obterDuracao(servico) {
+        var nome = normalizarServico(servico);
+        if (!nome) return null;
+
+        // Correspondencia exata primeiro
+        if (Object.prototype.hasOwnProperty.call(DURACOES, nome)) {
+            return DURACOES[nome];
+        }
+
+        // Correspondencia por prefixo (cobre variantes como
+        // "Alongamento Natural + Cutícula", "Manutenção Decorada + Cutícula")
+        var chaves = Object.keys(DURACOES);
+        for (var i = 0; i < chaves.length; i++) {
+            var chave = chaves[i];
+            if (nome.indexOf(chave) === 0) {
+                return DURACOES[chave];
+            }
+        }
+
+        // Nao mapeado: "sob consulta" -> nao bloqueia por duracao
+        return null;
+    }
+
+    /* ---------- Utilidades de hora (HH:MM <-> minutos) ---------- */
+
+    function horaParaMinutos(hhmm) {
+        if (typeof hhmm !== 'string') return null;
+        var m = hhmm.match(/^(\d{1,2}):(\d{2})$/);
+        if (!m) return null;
+        var h = parseInt(m[1], 10);
+        var min = parseInt(m[2], 10);
+        if (h < 0 || h > 23 || min < 0 || min > 59) return null;
+        return h * 60 + min;
+    }
+
+    function minutosParaHora(totalMinutos) {
+        var h = Math.floor(totalMinutos / 60);
+        var m = totalMinutos % 60;
+        return String(h).padStart(2, '0') + ':' + String(m).padStart(2, '0');
+    }
+
+    function somarHora(hhmm, minutosAcrescimo) {
+        var base = horaParaMinutos(hhmm);
+        if (base === null) return null;
+        var total = base + minutosAcrescimo;
+        if (total < 0 || total > 24 * 60) return null;
+        return minutosParaHora(total);
+    }
+
+    /* ---------- Detecao de sobreposicao de intervalos ---------- */
+
+    // Dois intervalos [inicioA, fimA) e [inicioB, fimB) se sobrepoem
+    // se inicioA < fimB E inicioB < fimA.
+    function intervalosSobrepoem(inicioA, duracaoA, inicioB, duracaoB) {
+        var aInicio = horaParaMinutos(inicioA);
+        var bInicio = horaParaMinutos(inicioB);
+        if (aInicio === null || bInicio === null) return false;
+        var aFim = aInicio + (duracaoA || 0);
+        var bFim = bInicio + (duracaoB || 0);
+        return aInicio < bFim && bInicio < aFim;
+    }
+
+    // Verifica se um candidato (data, hora, servico) conflita com
+    // qualquer agendamento existente na mesma data.
+    // Retorna { conflito: true, com: <agendamentoExistente> } ou
+    // { conflito: false }.
+    function detectarConflitoDuracao(candidato, existentes) {
+        var dataC = candidato.data;
+        var horaC = candidato.hora;
+        var servicoC = candidato.servico;
+        var duracaoC = obterDuracao(servicoC);
+
+        // Se o servico nao tem duracao mapeada, nao bloqueia por duracao.
+        if (duracaoC === null) {
+            return { conflito: false };
+        }
+
+        var idExcluir = candidato.id || null; // nao conflita consigo mesmo
+
+        for (var i = 0; i < (existentes || []).length; i++) {
+            var item = existentes[i];
+            if (!item || !item.data || !item.hora) continue;
+            if (item.data !== dataC) continue; // so mesmo dia
+            if (idExcluir && item.id === idExcluir) continue; // ignorar o proprio registro
+            if (item.status === 'cancelado') continue;
+
+            var duracaoE = obterDuracao(item.servico);
+            if (duracaoE === null) continue; // existente sem duracao mapeada nao bloqueia
+
+            if (intervalosSobrepoem(horaC, duracaoC, item.hora, duracaoE)) {
+                return { conflito: true, com: item };
+            }
+        }
+
+        return { conflito: false };
+    }
+
     var SDK = 'https://www.gstatic.com/firebasejs/10.12.2/';
     var cfg = window.AGENDA_FIREBASE || {};
     var configurado = !!(cfg && cfg.databaseURL);
@@ -112,17 +236,29 @@
             if (dados[k] === undefined) delete dados[k];
         });
 
-        return iniciarFirebase().then(function (online) {
-            if (!online) {
-                var lista = lerLocal();
-                var indice = lista.findIndex(function (i) { return i.id === dados.id; });
-                if (indice >= 0) lista[indice] = dados;
-                else lista.push(dados);
-                gravarLocal(lista);
-                return dados;
+        return listar().then(function (existentes) {
+            var conflito = detectarConflitoDuracao(dados, existentes);
+            if (conflito.conflito) {
+                var existente = conflito.com;
+                var msg = 'Conflito de horário: o serviço "' + (dados.servico || '') +
+                    '" (' + (obterDuracao(dados.servico) || 0) + ' min) às ' + dados.hora +
+                    ' se sobrepõe ao "' + (existente.servico || '') +
+                    '" já agendado às ' + existente.hora + ' em ' + existente.data + '.';
+                return Promise.reject(new Error(msg));
             }
-            return db.ref('agendamentos/' + dados.id).set(dados).then(function () {
-                return dados;
+
+            return iniciarFirebase().then(function (online) {
+                if (!online) {
+                    var lista = lerLocal();
+                    var indice = lista.findIndex(function (i) { return i.id === dados.id; });
+                    if (indice >= 0) lista[indice] = dados;
+                    else lista.push(dados);
+                    gravarLocal(lista);
+                    return dados;
+                }
+                return db.ref('agendamentos/' + dados.id).set(dados).then(function () {
+                    return dados;
+                });
             });
         });
     }
@@ -182,6 +318,13 @@
         salvar: salvar,
         atualizar: atualizar,
         remover: remover,
-        observar: observar
+        observar: observar,
+        // Novas funcoes de duracao
+        obterDuracao: obterDuracao,
+        detectarConflitoDuracao: detectarConflitoDuracao,
+        horaParaMinutos: horaParaMinutos,
+        minutosParaHora: minutosParaHora,
+        somarHora: somarHora,
+        intervalosSobrepoem: intervalosSobrepoem
     };
 })();

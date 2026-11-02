@@ -5,261 +5,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Controle da Agenda - Larissa Barbosa</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="agenda-admin.css">
+    <link rel="stylesheet" href="agenda-admin-visual.css">
     <link rel="stylesheet"
         href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <style>
-        .ctrl-box {
-            background: #fff;
-            border: 1px solid rgba(169, 113, 78, 0.18);
-            border-radius: 18px;
-            padding: 24px 20px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
-        }
 
-        .ctrl-box + .ctrl-box {
-            margin-top: 16px;
-        }
-
-        .hidden {
-            display: none !important;
-        }
-
-        .ctrl-label {
-            display: block;
-            font-size: 0.78rem;
-            font-weight: 700;
-            letter-spacing: 1.2px;
-            text-transform: uppercase;
-            color: #8a7f76;
-            margin: 16px 0 7px;
-        }
-
-        .ctrl-input {
-            width: 100%;
-            padding: 13px 15px;
-            border: 1.5px solid rgba(169, 113, 78, 0.35);
-            border-radius: 12px;
-            font-family: var(--font-body);
-            font-size: 0.95rem;
-            color: var(--color-text);
-            background: #FDFBF9;
-            outline: none;
-            transition: border-color 0.2s ease, box-shadow 0.2s ease;
-        }
-
-        .ctrl-input:focus {
-            border-color: var(--color-primary-dark);
-            box-shadow: 0 0 0 4px rgba(169, 113, 78, 0.14);
-        }
-
-        .ctrl-btn {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            width: 100%;
-            margin-top: 16px;
-            padding: 14px 18px;
-            border: none;
-            border-radius: 30px;
-            background: var(--color-primary-dark);
-            color: #fff;
-            font-family: var(--font-body);
-            font-size: 0.82rem;
-            font-weight: 700;
-            letter-spacing: 1.4px;
-            text-transform: uppercase;
-            cursor: pointer;
-            transition: all 0.25s ease;
-        }
-
-        .ctrl-btn:hover {
-            background: #8A5A3B;
-            transform: translateY(-2px);
-            box-shadow: 0 10px 22px rgba(169, 113, 78, 0.4);
-        }
-
-        .ctrl-btn.ctrl-btn-ghost {
-            background: transparent;
-            color: var(--color-primary-dark);
-            border: 1.5px solid rgba(169, 113, 78, 0.5);
-        }
-
-        .ctrl-btn.ctrl-btn-ghost:hover {
-            background: rgba(169, 113, 78, 0.1);
-            box-shadow: none;
-        }
-
-        .ctrl-btn.ctrl-btn-dark {
-            background: #1F1512;
-        }
-
-        .ctrl-btn.ctrl-btn-dark:hover {
-            background: #3E2b26;
-        }
-
-        .ctrl-error {
-            margin-top: 12px;
-            padding: 11px 14px;
-            border-radius: 10px;
-            background: #fdecec;
-            color: #a02727;
-            font-size: 0.85rem;
-            font-weight: 600;
-        }
-
-        .ctrl-feedback {
-            margin-top: 12px;
-            min-height: 20px;
-            font-size: 0.82rem;
-            color: var(--color-primary-dark);
-            font-weight: 600;
-        }
-
-        .ctrl-status {
-            display: inline-block;
-            padding: 11px 24px;
-            border-radius: 26px;
-            font-size: 0.85rem;
-            font-weight: 800;
-            letter-spacing: 1.6px;
-            text-transform: uppercase;
-            color: #fff;
-            transition: background 0.3s ease;
-        }
-
-        .ctrl-status.aberta {
-            background: #2f7d4f;
-        }
-
-        .ctrl-status.fechada {
-            background: #8a3a2f;
-        }
-
-        .ctrl-status-hint {
-            margin-top: 10px;
-            font-size: 0.88rem;
-            color: #7d7269;
-        }
-
-        .ctrl-switch-row {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-            margin-top: 20px;
-            padding: 16px;
-            background: #FBF7F3;
-            border: 1px solid rgba(169, 113, 78, 0.16);
-            border-radius: 14px;
-        }
-
-        .ctrl-switch {
-            position: relative;
-            display: inline-block;
-            width: 64px;
-            height: 34px;
-            flex-shrink: 0;
-        }
-
-        .ctrl-switch input {
-            opacity: 0;
-            width: 0;
-            height: 0;
-        }
-
-        .ctrl-slider {
-            position: absolute;
-            cursor: pointer;
-            inset: 0;
-            background: #c9beb4;
-            border-radius: 34px;
-            transition: 0.3s;
-        }
-
-        .ctrl-slider:before {
-            content: '';
-            position: absolute;
-            height: 26px;
-            width: 26px;
-            left: 4px;
-            bottom: 4px;
-            background: #fff;
-            border-radius: 50%;
-            transition: 0.3s;
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
-        }
-
-        .ctrl-switch input:checked+.ctrl-slider {
-            background: var(--color-primary-dark);
-        }
-
-        .ctrl-switch input:checked+.ctrl-slider:before {
-            transform: translateX(30px);
-        }
-
-        .ctrl-switch-text strong {
-            display: block;
-            font-size: 0.95rem;
-            color: var(--color-text);
-        }
-
-        .ctrl-switch-text span {
-            font-size: 0.8rem;
-            color: #8a7f76;
-        }
-
-        .ctrl-note {
-            margin-top: 18px;
-            padding: 14px 16px;
-            border-left: 4px solid var(--color-primary-dark);
-            background: #F6EBDF;
-            border-radius: 0 12px 12px 0;
-            font-size: 0.85rem;
-            line-height: 1.6;
-            color: #5a4a3d;
-        }
-
-        .ctrl-note i {
-            color: var(--color-primary-dark);
-            margin-right: 6px;
-        }
-
-        .ctrl-row {
-            display: flex;
-            gap: 12px;
-            flex-wrap: wrap;
-        }
-
-        .ctrl-row .ctrl-btn {
-            flex: 1 1 180px;
-        }
-
-        .ctrl-title {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .ctrl-title i {
-            color: var(--color-primary-dark);
-        }
-
-        .ctrl-back {
-            display: inline-flex;
-            align-items: center;
-            gap: 7px;
-            margin-top: 18px;
-            font-size: 0.82rem;
-            font-weight: 600;
-            color: var(--color-primary-dark);
-        }
-    </style>
 </head>
 
 <body>
-    <main class="bio-wrapper show-content">
+    <main class="bio-wrapper show-content ctrl-page">
         <section class="bio-section">
             <h2 class="section-title ctrl-title"><i class="fas fa-lock"></i> Controle da Agenda</h2>
 
@@ -319,6 +77,64 @@
                     <div id="agenda-lista" class="agenda-lista"></div>
                 </div>
 
+                <!-- Fechar agenda em datas específicas -->
+                <div class="ctrl-box" id="box-dias-fechados">
+                    <h3 class="agenda-title ctrl-title"><i class="fas fa-calendar-xmark"></i> Fechar agenda em
+                        datas específicas</h3>
+                    <p class="ctrl-status-hint">
+                        Feche um dia isolado ou um período inteiro, inclusive datas distantes. Vale para todas as
+                        clientes e atualiza o site na hora.
+                    </p>
+
+                    <label class="ctrl-label" for="df-data">Dia que deve ficar fechado</label>
+                    <div class="df-inline">
+                        <input type="date" id="df-data" class="ctrl-input">
+                        <button type="button" class="ctrl-btn" id="df-btn-fechar">
+                            <i class="fas fa-lock"></i> Fechar este dia
+                        </button>
+                    </div>
+
+                    <label class="ctrl-label" for="df-motivo">Motivo (opcional)</label>
+                    <input type="text" id="df-motivo" class="ctrl-input" maxlength="140"
+                        placeholder="Ex.: viagem, feriado, folga">
+
+                    <details class="df-periodo">
+                        <summary><i class="fas fa-calendar-week"></i> Fechar um período (vários dias seguidos)</summary>
+
+                        <div class="agenda-form-row">
+                            <div>
+                                <label class="ctrl-label" for="df-inicio">De</label>
+                                <input type="date" id="df-inicio" class="ctrl-input">
+                            </div>
+                            <div>
+                                <label class="ctrl-label" for="df-fim">Até</label>
+                                <input type="date" id="df-fim" class="ctrl-input">
+                            </div>
+                        </div>
+
+                        <label class="ctrl-label" for="df-motivo-intervalo">Motivo (opcional)</label>
+                        <input type="text" id="df-motivo-intervalo" class="ctrl-input" maxlength="140"
+                            placeholder="Ex.: férias">
+
+                        <button type="button" class="ctrl-btn ctrl-btn-dark" id="df-btn-intervalo">
+                            <i class="fas fa-calendar-xmark"></i> Fechar período
+                        </button>
+                    </details>
+
+                    <div id="df-feedback" class="ctrl-feedback" role="status" aria-live="polite"></div>
+
+                    <p id="df-conexao" class="df-conexao" role="status" aria-live="polite"></p>
+
+                    <button type="button" class="df-sinc" id="df-btn-sinc-local" hidden>
+                        <i class="fas fa-cloud-arrow-up"></i> Enviar ao banco as datas salvas só neste aparelho
+                    </button>
+
+                    <h4 class="df-lista-titulo">Datas fechadas</h4>
+                    <div id="df-lista" class="df-lista">
+                        <p class="df-vazio">Carregando datas fechadas...</p>
+                    </div>
+                </div>
+
                 <div class="ctrl-box">
                     <span id="status-pill" class="ctrl-status aberta">Agenda aberta</span>
                     <p id="status-hint" class="ctrl-status-hint">O site está aceitando agendamentos.</p>
@@ -341,13 +157,14 @@
                     <div id="feedback" class="ctrl-feedback"></div>
 
                     <button type="button" class="ctrl-btn ctrl-btn-dark" id="btn-baixar">
-                        <i class="fas fa-download"></i> Baixar agenda-config.js (para valer em todo o site)
+                        <i class="fas fa-download"></i> Baixar agenda-config.js (backup / site sem banco)
                     </button>
 
                     <div class="ctrl-note">
                         <i class="fas fa-circle-info"></i>
-                        A troca acima já vale <strong>na hora, neste aparelho</strong>. Para valer para todo mundo,
-                        toque em <strong>Baixar agenda-config.js</strong> e substitua o arquivo na hospedagem do site.
+                        O estado acima é salvo no <strong>banco de dados online</strong> e vale para todos os
+                        aparelhos na hora. O arquivo <strong>agenda-config.js</strong> é apenas um backup usado quando o
+                        site abre sem conexão com o banco.
                     </div>
                 </div>
 
@@ -455,7 +272,9 @@
 
     <script src="agenda-firebase.js"></script>
     <script src="agenda-db.js"></script>
+    <script src="agenda-config-db.js"></script>
     <script src="agenda-admin.js"></script>
+    <script src="agenda-admin-config.js"></script>
     <script>
         (function () {
             var K_SENHA = 'agendaSenhaHash';
@@ -501,16 +320,28 @@
                 try { localStorage.setItem(K_ESTADO, JSON.stringify(e)); } catch (err) { }
             }
 
-            function pintarPainel() {
-                var e = lerEstado();
-                $('sw-aberta').checked = e.aberta;
+            function pintarPainel(estado) {
+                var e = estado || lerEstado();
+                $('sw-aberta').checked = e.aberta !== false;
                 $('inp-aviso').value = e.aviso || AVISO_PADRAO;
-                $('status-pill').textContent = e.aberta ? 'Agenda aberta' : 'Agenda fechada';
-                $('status-pill').className = 'ctrl-status ' + (e.aberta ? 'aberta' : 'fechada');
-                $('sw-titulo').textContent = e.aberta ? 'Agenda aberta' : 'Agenda fechada';
-                $('status-hint').textContent = e.aberta
+                $('status-pill').textContent = e.aberta !== false ? 'Agenda aberta' : 'Agenda fechada';
+                $('status-pill').className = 'ctrl-status ' + (e.aberta !== false ? 'aberta' : 'fechada');
+                $('sw-titulo').textContent = e.aberta !== false ? 'Agenda aberta' : 'Agenda fechada';
+                $('status-hint').textContent = e.aberta !== false
                     ? 'O site está aceitando agendamentos.'
                     : 'Os botões de agendamento estão desativados no site.';
+            }
+
+            function carregarConfigRemota() {
+                if (!window.AgendaDB || typeof window.AgendaDB.lerConfigAgenda !== 'function') return;
+                window.AgendaDB.lerConfigAgenda().then(function (remoto) {
+                    if (remoto) pintarPainel(remoto);
+                }).catch(function () { });
+            }
+
+            function observarConfig() {
+                if (!window.AgendaDB || typeof window.AgendaDB.observarConfigAgenda !== 'function') return;
+                window.AgendaDB.observarConfigAgenda(pintarPainel);
             }
 
             function atualizar() {
@@ -519,9 +350,23 @@
                 e.aviso = ($('inp-aviso').value || '').trim() || AVISO_PADRAO;
                 e.atualizado = new Date().toISOString();
                 salvarEstado(e);
-                pintarPainel();
-                $('feedback').textContent = 'Salvo às ' +
-                    new Date().toLocaleTimeString('pt-BR') + ' (neste aparelho)';
+                pintarPainel(e);
+
+                var agora = new Date().toLocaleTimeString('pt-BR');
+
+                if (window.AgendaDB && typeof window.AgendaDB.salvarConfigAgenda === 'function') {
+                    $('feedback').textContent = 'Salvando...';
+                    window.AgendaDB.salvarConfigAgenda({ aberta: e.aberta, aviso: e.aviso }).then(function (r) {
+                        $('feedback').textContent = r && r.online
+                            ? 'Salvo às ' + agora + ' e sincronizado para todos os aparelhos.'
+                            : 'Salvo às ' + agora + ' somente neste aparelho (sem conexão com o banco).';
+                    }).catch(function () {
+                        $('feedback').textContent = 'Salvo às ' + agora + ' somente neste aparelho.';
+                    });
+                    return;
+                }
+
+                $('feedback').textContent = 'Salvo às ' + agora + ' (neste aparelho)';
             }
 
             function erro(id, msg) {
@@ -534,6 +379,9 @@
 
             function iniciarAgenda() {
                 if (window.AgendaAdmin) window.AgendaAdmin.iniciar();
+                if (window.AgendaAdminConfig) window.AgendaAdminConfig.iniciar();
+                carregarConfigRemota();
+                observarConfig();
             }
 
             function iniciar() {

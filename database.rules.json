@@ -1,0 +1,26 @@
+{
+  "rules": {
+    "agendamentos": {
+      ".read": true,
+      ".write": true,
+      "$id": {
+        ".validate": "newData.hasChildren(['nome','servico','data','hora','status'])"
+      }
+    },
+    "config": {
+      ".read": true,
+      ".write": true,
+      "agendaAberta": {
+        ".validate": "newData.isBoolean()"
+      },
+      "aviso": {
+        ".validate": "newData.isString() && newData.val().length <= 200"
+      },
+      "diasFechados": {
+        "$data": {
+          ".validate": "$data.matches(/^\\d{4}-\\d{2}-\\d{2}$/) && newData.hasChild('fechado') && newData.child('fechado').val() === true && (!newData.hasChild('motivo') || (newData.child('motivo').isString() && newData.child('motivo').val().length <= 140)) && (!newData.hasChild('criadoEm') || newData.child('criadoEm').isString())"
+        }
+      }
+    }
+  }
+}
